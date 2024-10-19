@@ -50,10 +50,10 @@ export let Player = class Player {
                 break
             case "newPlayer":
                 console.log("newPlayer called")
-                UI.addPlayer(data.player)
+                addPlayer(data.player)
                 if (Object.keys(data.currentPlayers) != getUUIDs()) {
                     console.log("Found a discrepancy!")
-                    UI.setPlayers(data.currentPlayers)
+                    setPlayers(data.currentPlayers)
                     UI.setLeaderboard(getPlayerArray())
                 } else {
                     UI.addPlayerToLeaderboard(data.player)
