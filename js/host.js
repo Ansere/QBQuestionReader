@@ -124,8 +124,8 @@ export class Host {
         this.broadcast(HostActionData.playerBuzz(this.uuid))
     }
 
-    announceQuestionOutcome(verdict, player, answer) {
-        this.broadcast(HostActionData.announceQuestionOutcome(verdict, player, answer))
+    announceQuestionOutcome(verdict, player, answer, correctAnswer) {
+        this.broadcast(HostActionData.announceQuestionOutcome(verdict, player, answer, correctAnswer))
     }
 
 }
@@ -228,12 +228,13 @@ class HostActionData {
         })
     }
 
-    static announceQuestionOutcome(verdict, player, answer) {
+    static announceQuestionOutcome(verdict, player, answer, correctAnswer) {
         return JSON.stringify({
             action: "questionOutcome",
             verdict: verdict,
             player: player,
             answer: answer,
+            correctAnswer: correctAnswer,
             playerScores: Object.fromEntries(getPlayerArray().map(({uuid, score}) => [uuid, score]))
         })
     }

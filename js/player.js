@@ -81,7 +81,7 @@ export let Player = class Player {
             case "questionOutcome":
                 console.log("received outcome")
                 console.log(data)
-                Game.enactAnswerEffects(data.player, data.answer, data.verdict)
+                Game.enactAnswerEffects(data.player, data.answer, data.verdict, data.answer, data.correctAnswer)
                 break
         }
     }

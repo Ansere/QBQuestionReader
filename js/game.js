@@ -251,7 +251,7 @@ export let Game = class {
         }
     }
 
-    static async enactAnswerEffects(person, answer, verdict) {
+    static async enactAnswerEffects(person, answer, verdict, correctAnswer) {
         Game.buzzedPlayer = false
         this.clearTimer()
         UI.hideBuzz()
@@ -259,14 +259,14 @@ export let Game = class {
         UI.appendAnswer(person, answer, verdict)
         if (verdict) {
             Game.award(person)
-            this.endQuestion(answer)
+            this.endQuestion(correctAnswer)
             UI.updateScoreboard()
             return
         }
         Game.penalize(person)
         UI.updateScoreboard()
         if (Object.keys(this.buzzedPlayers).length == getPlayerArray().length) { //everyone has answered
-            this.endQuestion(answer)
+            this.endQuestion(correctAnswer)
             return
         }
         if (QuestionReader.isPaused) { //interrupt
@@ -279,9 +279,9 @@ export let Game = class {
     }
 
     static judgeAnswer(answer, source) {
-        let verdict = Game.answer === answer
-        entity.announceQuestionOutcome(verdict, source, answer)
-        Game.enactAnswerEffects(source, answer, verdict)
+        let verdict = Game.answer.toLowerCase() === answer.toLowerCase()
+        entity.announceQuestionOutcome(verdict, source, answer, Game.answer)
+        Game.enactAnswerEffects(source, answer, verdict, Game.answer)
     }
 
     static penalize(player) {
