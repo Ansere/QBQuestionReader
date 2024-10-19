@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<head>
+    <link rel="stylesheet" href = "styles.css">
+    <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+    <script src = "https://unpkg.com/uuid@8.3.1/dist/umd/uuidv4.min.js"></script>
+    <script src = "js/main.js" type = "module"></script>
+</head>
+<body>
+    <div id = "mainDiv">
+        <div id = "mainFlex">
+            <div id = "questionDiv">
+                <div id = "answerInputDiv" class = "hidden">
+                    <div id = "answerInputContainer">
+                        <span id = "answerInputLabel">
+                            Answer:
+                        </span>
+                        <input id = "answerInput" autocomplete="off" tabindex="0">
+                    </div>
+                    <button id = "answerButton">Submit!</button>
+                </div>
+                <div id = "chatInputDiv" class = "hidden">
+                    <div id = "chatInputContainer">
+                        <span id = "chatInputLabel">
+                            Chat:
+                        </span>
+                        <input id = "chatInput" autocomplete="off" tabindex="0">
+                    </div>
+                    <button id = "chatButton">Submit!</button>
+                </div>
+                <div id = "questionBoxDiv">
+                    <div id = "questionBox">
+                    </div>
+                    <div id = "answerBox" class = "hidden">
+                        Answer: answer
+                    </div>
+                </div>
+                <ul id = "chatLog">
+                </ul>
+            </div>
+            <div id = "settingsDiv">
+                <div id = "timer">
+                    10.0
+                </div>
+                <div id = "buttonPanel">
+                    <button id = "startQuestionButton">
+                        Start
+                    </button>
+                </div>
+                <div>
+                    <ul id = "leaderboard">
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
