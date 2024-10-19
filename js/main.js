@@ -15,6 +15,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 UI.addMessage(entity.uuid, message)
             }
             entity.sendMessage(message)
+            UI.hideChat()
         }
     }
     chatButton.onclick = sendMessage
@@ -62,6 +63,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             } else {
                 entity.attemptBuzz()
             }
+        } else if (e.code == "Enter") {
+            UI.chat()
         }
 
     })

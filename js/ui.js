@@ -136,6 +136,7 @@ export default class UI {
     static buzz = () => {
         let input = document.getElementById("answerInputDiv")
         input.classList.remove("hidden")
+        let answerInput = document.getElementById("answerInput")
         answerInput.focus()
     } 
 
@@ -192,4 +193,17 @@ export default class UI {
         li.replaceChildren(buzz, answerSpan, span)
         document.getElementById("chatLog").prepend(li)
     }
+
+    static chat = () => {
+        let input = document.getElementById("chatInputDiv")
+        input.classList.remove("hidden")
+        let chatInput = document.getElementById("chatInput")
+        chatInput.focus()
+    } 
+
+    static hideChat = () => {
+        let input = document.getElementById("chatInputDiv")
+        input.classList.add("hidden")
+    }
+
 }
