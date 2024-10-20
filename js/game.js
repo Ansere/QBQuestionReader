@@ -189,6 +189,10 @@ export let Game = class {
             console.log("This player has already buzzed.")
             return
         }
+        if (this.buzzedPlayer) {
+            console.log("Someone has already buzzed!")
+            return
+        }
         this.buzzedPlayer = playerUUID
         this.buzzedPlayers[playerUUID] = true
         if (entity.uuid == this.buzzedPlayer) {
@@ -200,6 +204,7 @@ export let Game = class {
         }
         UI.showBuzzOnTimer()
         Game.startBuzzTimer()
+        return true
     }
 
     static startQuestion() {

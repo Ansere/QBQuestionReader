@@ -58,8 +58,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         e.preventDefault()
         if (e.code == "Space" && Game.buzzedPlayers[entity.uuid] === undefined && Game.live) {
             if (entity.host) {
-                Game.buzz(entity.uuid)
-                entity.buzz()
+                if(Game.buzz(entity.uuid)) {
+                    entity.buzz()
+                }
             } else {
                 entity.attemptBuzz()
             }
