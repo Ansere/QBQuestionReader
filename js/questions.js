@@ -578,6 +578,9 @@ the State.`, answer: "Mussolini"},
 {question: `If liberalism spells individualism, Fascism spells government.`, answer: "Mussolini"}
 
 ]
+let tempQuestionObj = {}
+questions.forEach(q => tempQuestionObj[q.question] = q.answer)
+questions = Object.keys(tempQuestionObj).map(k => ({question: k, answer: tempQuestionObj[k]}))
 let questionIndex = -1
 
 export let randomQuestion = () => {

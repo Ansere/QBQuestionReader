@@ -24,6 +24,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (event.key == "Enter") {
             event.preventDefault()
             sendMessage()
+        } else if (event.key == "Escape") {
+            UI.hideChat()
+            event.preventDefault()
         }
     })
     let answerButton = document.getElementById("answerButton")
@@ -41,7 +44,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
     let startQuestionButton = document.getElementById("startQuestionButton")
-    startQuestionButton.onclick = async () => {
+    let startQuestion = async () => {
         if (entity.host) {
             entity.startQuestion()
         } else {
@@ -51,11 +54,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             await Game.readNewQuestion()
         }
     }
-    document.addEventListener("keyup", (e) => {
+    startQuestionButton.onclick = startQuestion
+    document.addEventListener("keydown", (e) => {
         if (e.target.tagName == "INPUT") {
             return
         }
-        e.preventDefault()
         if (e.code == "Space" && Game.buzzedPlayers[entity.uuid] === undefined && Game.live) {
             if (entity.host) {
                 if(Game.buzz(entity.uuid)) {
@@ -64,9 +67,22 @@ document.addEventListener("DOMContentLoaded", async () => {
             } else {
                 entity.attemptBuzz()
             }
+            e.preventDefault()
         } else if (e.code == "Enter") {
             UI.chat()
+            e.preventDefault()
+        } else if (e.code == "KeyN") {
+            e.preventDefault()
+            if (Game.live) {
+                return
+            } else {
+                startQuestion()
+            }
+        } else if (e.code == "Escape") {
+            UI.hideChat()
+            e.preventDefault()
         }
+        return false;
 
     })
     
