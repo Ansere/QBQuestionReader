@@ -27,7 +27,7 @@ export let createHost = async function createHost(name = randomName()) {
         //debug: 3
     })
     await initPeer(peer) 
-    console.log(randomName())
+    console.log(randomName())   
     return new Host(peer, name)
 }
 
@@ -35,7 +35,7 @@ export let createHost = async function createHost(name = randomName()) {
  * Returns a PeerJS DataConnection object if connection to host is established. If not, returns undefined.
  * @param {string} host 
  */
-async function connectToHost(peer, host, name) {
+export let connectToHost = async function connectToHost(peer, host, name) {
     let conn = peer.connect(host, {
         metadata: {
             name: name

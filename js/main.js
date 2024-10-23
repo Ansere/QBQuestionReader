@@ -1,8 +1,12 @@
 import { createHost, createPlayerOrHost } from "./networking.js";
 import UI from "./ui.js";
-import { Game } from "./game.js";
+import { Game, getPlayers } from "./game.js";
 
 export let entity;
+
+export let setEntity = (e) => {
+    entity = e
+}
 
 //init
 document.addEventListener("DOMContentLoaded", async () => {
@@ -90,6 +94,31 @@ document.addEventListener("DOMContentLoaded", async () => {
     await initPlayer()
 
 })
+
+
+//init window unload and player disconnect
+window.onbeforeunload = async (event) => { await beforeClose(event)}
+
+async function beforeClose(event) {
+    if (entity === undefined) {
+        return false;
+    }
+    console.log("attempted leave")
+    if (entity.host && Object.keys(getPlayers()).length > 1) {
+        //TODO - transfer host status
+        let newHostUUID = Object.keys(getPlayers())[1]
+        if (Game.live) {
+            await Game.endQuestion()
+        }
+        console.log("hi1")
+        await entity.transferHost(newHostUUID)
+        event.returnValue = false
+    } else if (!entity.host) {
+        entity.conn.close()
+    }
+    await new Promise(resolve => setTimeout(resolve, 2000))
+}
+
 /**
  * Initializes the player and grants them host if applicable
  */
@@ -107,8 +136,9 @@ async function initPlayer() {
     url.searchParams.set("room", roomId)
     history.pushState({}, '', url.href)
     if (entity.host) {
-        //host
-
+        UI.addPlayerToLeaderboard(entity.uuid, getPlayers()[entity.uuid].score)
+        UI.assignHostSpan()
+        UI.boldYourself()
     } else {
         //player
 

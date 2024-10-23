@@ -16,6 +16,9 @@ export let setPlayers = (playerObj) => {
     for (let player of Object.keys(playerObj)) {
         players[player] = playerObj[player]
     }
+    for (let player of Object.keys(players)) {
+        players[player].score = parseInt(players[player].score)
+    }
 }
 
 /**
@@ -24,6 +27,7 @@ export let setPlayers = (playerObj) => {
  */
 export let addPlayer = (playerObj) => {
     players[playerObj.uuid] = playerObj
+    players[playerObj.uuid].score = parseInt(players[playerObj.uuid].score)
 }
 
 /**
@@ -226,7 +230,9 @@ export let Game = class {
         console.log("endQuestion")
         UI.endQuestion()
         UI.showAnswer(answer)
-        this.clearTimer()
+        if (this.clearTimer) {
+            this.clearTimer()
+        }
         Game.live = false
         Game.buzzedPlayers = {}
         UI.updateTimerDisplay("0.0")

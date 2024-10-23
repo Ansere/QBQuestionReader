@@ -1,26 +1,59 @@
-import {Game, getPlayerArray, getPlayers} from "./game.js"
+import {Game, getPlayerArray, getPlayers, setPlayers} from "./game.js"
 import { establishConnection } from "./networking.js"
+import { entity } from "./main.js"
 import UI from "./ui.js"
 
 export class Host {
 
-    constructor(peer, name) {
-        this.uuid = uuidv4()
+    constructor(peer, name, uuid = uuidv4(), score) {
+        this.uuid = uuid
         this.peer = peer
         this.name = name  
         this.id = peer.id
         this.host = true
         let players = getPlayers()
-        players[this.uuid] = new PlayerData(this.uuid, false, this.id, name, 0)
+        if (score === undefined) { //Host(peer, name, uuid)
+            players[this.uuid] = new PlayerData(this.uuid, false, this.id, name, 0)
+        } else {
+            players[uuid] = new PlayerData(uuid, false, this.id, name, score)
+        }
         peer.on('connection', async (conn) => {
-            let uuid = await this.onPlayerConnect(conn)
-            if (!uuid) {
-                return
+            let res = {}
+            for (let player of getPlayerArray()) {
+                res[player.peerID] = player
             }
-            conn.on("data", data => this.onDataReceived(data, conn.peer, uuid))
+            let player = res[conn.peer]
+            let playerUUID;
+            if (player === undefined) {
+                console.log("new player")
+                playerUUID = await this.onPlayerConnect(conn)
+                if (!playerUUID) {
+                    return
+                }
+            } else {
+                console.log("returning player, change of host")
+                player.conn = conn
+                playerUUID = res[conn.peer].uuid
+            }
+            conn.on("data", data => this.onDataReceived(data, conn.peer, playerUUID))
+            conn.on("close", () => this.onPlayerDisconnect(playerUUID))
         })
-        UI.addPlayerToLeaderboard(this.uuid, players[this.uuid].score)
     }
+
+    static async fromPlayer(player, playerData) {
+        setPlayers({})
+        let players = getPlayers()
+        let host = new Host(player.peer, player.name, player.uuid, playerData[player.uuid].score)
+        for (let key of Object.keys(playerData)) {
+            if (key == host.uuid) {
+                continue
+            }
+            let data = playerData[key]
+            players[key] = new PlayerData(data.uuid, null, data.peerID, data.name, data.score)
+        }
+        console.log(getPlayers())
+        return host
+    }   
 
     async onPlayerConnect(conn) {
         let result = await establishConnection(conn)
@@ -33,12 +66,19 @@ export class Host {
             uuid = uuidv4()
         }
         players[uuid] = new PlayerData(uuid, conn, conn.peer, conn.metadata.name)
-        conn.send(HostActionData.initPlayer(uuid, players))
+        conn.send(HostActionData.initPlayer(uuid, this.uuid, players))
         UI.addPlayerToLeaderboard(uuid, players[uuid].score)
         this.propagate(HostActionData.announcePlayer(players[uuid], players), uuid)
         return uuid
     }
     
+    async onPlayerDisconnect(uuid) {
+        console.log("disconnected")
+        UI.removePlayerFromLeaderboard(uuid)
+        delete getPlayers()[uuid]
+        this.broadcast(HostActionData.playerDisconnect(uuid))
+    }
+
     onDataReceived(data, peer, peerUUID) {
         data = JSON.parse(data)
         console.log(data)
@@ -75,6 +115,16 @@ export class Host {
                     Game.judgeAnswer(data.answer, peerUUID)
                 }
                 break
+            case "readyForHost":
+                console.log(peerUUID)
+                console.log(this.newHost)
+                if (peerUUID !== this.newHost) {
+                    console.log("invalid new host request")
+                    return
+                }
+                this.isReady()
+                break
+
         }
     }
 
@@ -88,6 +138,7 @@ export class Host {
     }
 
     broadcast(data) {
+        console.log(getPlayerArray())
         getPlayerArray().forEach(player => {
             if (player.conn == false) {
                 return
@@ -96,7 +147,7 @@ export class Host {
         })
     }
 
-    privateMessage(uuid, message) {
+    async privateMessage(uuid, message) {
         getPlayers()[uuid].conn.send(message)
     }
 
@@ -128,6 +179,32 @@ export class Host {
         this.broadcast(HostActionData.announceQuestionOutcome(verdict, player, answer, correctAnswer))
     }
 
+    async transferHost(uuid) {
+        console.log("hi")
+        let players = getPlayers()
+        console.log(players)
+        let res = {}
+        for (let playerKey of Object.keys(players)) {
+            if (playerKey == this.uuid) {
+                continue   
+            }
+            let {...obj} = players[playerKey]
+            delete obj.conn
+            res[playerKey] = obj
+        }
+        this.newHost = uuid
+        this.privateMessage(uuid, HostActionData.transferHost(res, this.uuid))
+        await new Promise(resolve => {
+            this.isReady = resolve
+        })
+        this.announceTransferHost(uuid)
+    }
+
+    announceTransferHost(uuid) {
+        console.log("transferhost")
+        this.broadcast(HostActionData.announceTransferHost(getPlayers()[uuid].conn.peer, uuid, this.uuid))
+    }
+
 }
 
 class PlayerData {
@@ -152,6 +229,7 @@ class PlayerData {
         }
         return res;
     }
+
 }
 
 class HostActionData {
@@ -164,10 +242,11 @@ class HostActionData {
         })
     }
 
-    static initPlayer(uuid, players) {
+    static initPlayer(uuid, hostUUID, players) {
         return JSON.stringify({
             action: "init",
             uuid: uuid,
+            hostUUID: hostUUID,
             players: players
         })
     }
@@ -236,6 +315,30 @@ class HostActionData {
             answer: answer,
             correctAnswer: correctAnswer,
             playerScores: Object.fromEntries(getPlayerArray().map(({uuid, score}) => [uuid, score]))
+        })
+    }
+
+    static playerDisconnect(uuid) {
+        return JSON.stringify({
+            action: "playerDisconnect",
+            player: uuid
+        })
+    }
+
+    static transferHost(playerData, hostUUID) {
+        return JSON.stringify({
+            action: "transferHost",
+            players: playerData,
+            hostUUID: hostUUID
+        })
+    }
+
+    static announceTransferHost(peerID, uuid, host) {
+        return JSON.stringify({
+            action: "newHost",
+            player: peerID,
+            playerUUID: uuid,
+            hostUUID: host
         })
     }
 

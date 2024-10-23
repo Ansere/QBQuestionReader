@@ -3,25 +3,43 @@
        -moz-box-sizing: border-box;
             box-sizing: border-box;
 }
+html {
+    max-height: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+body {
+    max-height: inherit;
+    height: inherit;
+}
+#mainDiv {
+    max-height: inherit;
+    height: inherit;
+}
 #mainFlex {
-    margin: 2%;
+    padding: 2%;
+    box-sizing: border-box;
     display: flex;
     flex-flow: row nowrap;
+    max-height: inherit;
+    min-height: 100%;
 }
 #questionDiv {
-    width: 70%;
+    min-height: inherit;
+    width: 80%;
     background-color: lightcoral;
     display: flex;
     flex-direction: column;    
     row-gap: 0.5em;
 }
 #settingsDiv {
+    min-height: 100%;
     display: flex;
     flex-direction: column;
-    width: 30%;
+    width: 20%;
     background-color: lightblue;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: space-between;
     text-align: center;
     padding: 1%;
     align-content: flex-start;
@@ -31,15 +49,13 @@
     flex: none
 }
 #questionBoxDiv {
-    min-height: 1em;
+    min-height: fit-content;
     padding: 1%;
     border: 0.2em solid black;
     border-radius: 0.5em;
     display: flex;
     flex-direction: column;
     gap: 0.5em;
-}
-#questionBox {
 }
 #answerInputContainer, #chatInputContainer {
     border: 0.1em solid black;
@@ -83,6 +99,10 @@
     border: 0em;
     border-radius: 0.5em;
 }
+
+#answerBox {
+    font-weight: bold;
+}
 #answerInputDiv, #chatInputDiv {
     display: flex;
     flex-direction: row;
@@ -90,9 +110,78 @@
     width: 100%;
 }
 html, button, input {
+    height: 100%;
     font-size: 1em;
     font-family: Arial, Helvetica, sans-serif;
 }
+/* Chat styles */
+
+#chatLog {
+    margin: 0em;
+    display: flex;
+    padding-left: 1%;
+    padding-right: 1%;
+    flex-flow: column nowrap;
+    align-content: center;
+    overflow-y: auto;
+    max-height: inherit;
+    flex-grow: 1;
+}
+
+#chatLog > * {
+    list-style-type: none;
+}
+
+#chatLog > li > span {
+    display: inline-flex;
+    flex-flow: row nowrap;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+}
+
+#chatLog > li {
+    display: flex;
+    gap: 0.2em
+}
+
+.buzzLog, .incorrect, .correct {
+    padding: 0.2em 0.3em 0.2em 0.3em;
+    border-radius: 0.5em;
+    color: white;
+}
+
+.buzzLog, .incorrect {
+    background-color: red;
+}
+
+.correct {
+    background-color: lime;
+}
+
+/* Right panel styles */
+
+#timer {
+    font-size: 2em;
+    border-radius: 0.5em;
+}
+#buttonPanel {
+    display: flex;
+}
+
+#buttonPanel > button {
+    padding: 1%;
+}
+
+.buzz {
+    background-color: red;
+}
+
+.hidden {
+    display: none !important
+}
+
+
 #leaderboard {
     padding: 0em;
     margin: 0em;
@@ -124,66 +213,34 @@ html, button, input {
     padding: 0.5%;
     border-radius: 0.5em;
 }
-#chatLog {
-    margin: 0em;
+
+.you {
+    font-weight: bold;
+}
+
+.player-list-cell > div {
     display: flex;
-    padding-left: 1%;
-    padding-right: 1%;
-    flex-flow: column nowrap;
-    align-content: center;
+    gap: 0.1em;
+    align-items: center;
 }
 
-#chatLog > * {
-    list-style-type: none;
-}
-#buttonPanel {
-    display: flex;
-}
+.host {
 
-#buttonPanel > button {
-    padding: 1%;
-}
-
-#timer {
-    font-size: 2em;
-    border-radius: 0.5em;
-}
-
-.buzz {
-    background-color: red;
-}
-
-.hidden {
-    display: none !important
-}
-
-.buzzLog, .incorrect, .correct {
     padding: 0.2em 0.3em 0.2em 0.3em;
     border-radius: 0.5em;
     color: white;
+    background-color: goldenrod;
 }
 
-.buzzLog, .incorrect {
-    background-color: red;
+/* infoBox */
+#infoBox {
+    padding-left: 5%;
+    padding-right: 5%;
+    border: solid 0.5em black;
+    border-radius: 1em;
 }
 
-.correct {
-    background-color: lime;
-}
-
-#chatLog > li {
-    display: flex;
-    gap: 0.2em
-}
-
-#chatLog > li > span {
-    display: inline-flex;
-    flex-flow: row nowrap;
-    text-align: center;
-    align-items: center;
-    justify-content: center;
-}
-
-#answerBox {
-    font-weight: bold;
+#infoBox > p {
+    text-align: justify;
+    text-justify: inter-word;
 }

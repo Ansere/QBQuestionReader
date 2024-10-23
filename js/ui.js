@@ -19,7 +19,9 @@ export default class UI {
             let li = document.createElement("li")
             li.id = "player-list-cell-" + player.uuid
             li.classList += ["player-list-cell"]
-            li.textContent = name
+            let div = document.createElement("div")
+            div.textContent = name
+            li.appendChild(div)
             let span = document.createElement("span")
             span.classList += "player-score"
             span.textContent = player.score
@@ -28,6 +30,8 @@ export default class UI {
             li.setAttribute("uuid", player.uuid)
         }
         leaderboard.replaceChildren(...children)
+        UI.assignHostSpan()
+        UI.updateScoreboard()
     }
 
     /**
@@ -38,6 +42,7 @@ export default class UI {
     static addPlayerToLeaderboard = function addPlayerToLeaderboard(playerUUID, score) {
         let players = getPlayers()
         if (players[playerUUID] === undefined) {
+            console.log("UI: cannot find player")
             return false;
         }
         if (document.getElementById("player-list-cell-" + playerUUID)) {
@@ -46,7 +51,9 @@ export default class UI {
         let leaderboard = document.getElementById("leaderboard")
         let li = document.createElement("li")
         li.classList += ["player-list-cell"]
-        li.textContent = players[playerUUID].name
+        let div = document.createElement("div")
+        div.textContent = players[playerUUID].name
+        li.appendChild(div)
         li.id = "player-list-cell-" + playerUUID
         let span = document.createElement("span")
         span.classList += "player-score"
@@ -66,7 +73,9 @@ export default class UI {
         if (players[playerUUID] === undefined) {
             return false;
         }
+        console.log("removed")
         document.getElementById("player-list-cell-" + playerUUID).remove()
+        UI.updateScoreboard()
     }
 
     /**
@@ -138,7 +147,7 @@ export default class UI {
         input.classList.remove("hidden")
         let answerInput = document.getElementById("answerInput")
         answerInput.focus()
-    } 
+    }
 
     static hideBuzz = () => {
         let input = document.getElementById("answerInputDiv")
@@ -164,12 +173,11 @@ export default class UI {
     static updateScoreboard() {
         for (let player of getPlayerArray()) {
             let playerCell = document.getElementById("player-list-cell-" + player.uuid)
-            if (playerCell === undefined) {
-                console.error("this is bad...")
+            if (playerCell === null) {
                 return
             }
-            playerCell.getElementsByTagName("span")[0].textContent = player.score
-        } 
+            playerCell.getElementsByClassName("player-score")[0].textContent = player.score
+        }
         let ul = document.getElementById("leaderboard")
         ul.replaceChildren(...Array.from(...[ul.getElementsByTagName("li")]).sort((a, b) => getPlayers()[b.getAttribute("uuid")].score - getPlayers()[a.getAttribute("uuid")].score))
     }
@@ -199,11 +207,24 @@ export default class UI {
         input.classList.remove("hidden")
         let chatInput = document.getElementById("chatInput")
         chatInput.focus()
-    } 
+    }
 
     static hideChat = () => {
         let input = document.getElementById("chatInputDiv")
         input.classList.add("hidden")
+    }
+
+    static boldYourself = () => {
+        console.log("hi")
+        document.getElementById("player-list-cell-" + entity.uuid).classList.add("you")
+    }
+
+    static assignHostSpan() {
+        let hostSpan = document.createElement("span")
+        hostSpan.classList.add("host")
+        hostSpan.textContent = "Host"
+        let li = document.getElementById("player-list-cell-" + (entity.host ? entity.uuid : entity.hostUUID))
+        li.getElementsByTagName("div")[0].appendChild(hostSpan)
     }
 
 }
