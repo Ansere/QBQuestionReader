@@ -97,7 +97,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
 //init window unload and player disconnect
-window.onbeforeunload = async (event) => { await beforeClose(event)}
+window.onpagehide = async (event) => { 
+    event.stopImmediatePropagation()
+    event.preventDefault()
+    await beforeClose(event);
+    event.returnValue = undefined;
+    return undefined;
+}
 
 async function beforeClose(event) {
     if (entity === undefined) {
@@ -110,13 +116,10 @@ async function beforeClose(event) {
         if (Game.live) {
             await Game.endQuestion()
         }
-        console.log("hi1")
         await entity.transferHost(newHostUUID)
-        event.returnValue = false
     } else if (!entity.host) {
         entity.conn.close()
     }
-    await new Promise(resolve => setTimeout(resolve, 2000))
 }
 
 /**
@@ -139,6 +142,7 @@ async function initPlayer() {
         UI.addPlayerToLeaderboard(entity.uuid, getPlayers()[entity.uuid].score)
         UI.assignHostSpan()
         UI.boldYourself()
+        
     } else {
         //player
 
