@@ -76,7 +76,7 @@ class QuestionReader {
             }
             let append = string + " "
             UI.appendStringToQuestion(append)
-            entity.sendQuestionData(append)
+            entity.sendQuestionTextData(append)
             if (!QuestionReader.instant && string.includes(".")) {
                 await new Promise(resolve => setTimeout(resolve, sentenceExtraTime))
             }
@@ -245,17 +245,21 @@ export let Game = class {
         let questionData = randomQuestion()
         Game.answer = 0 
         let questionText = questionData.question
+        let type = false
         if (questionData.mcq) {
             let ansInd = Math.floor(Math.random() * 4)
             questionText += "\n\n"
             let ansArr = questionData.answers.slice(1)
             ansArr.splice(ansInd, 0, questionData.answer)
             questionText += ansArr.map( (val, ind) => ["W", "X", "Y", "Z"][ind] + ") " + val).join("\n")
-            Game.answer = ["W", "X", "Y", "Z"][ansInd]
+            Game.answer = [["W", "X", "Y", "Z"][ansInd], questionData.answer]
+            type = "Multiple Choice"
         } else {
             Game.answer = questionData.answer
+            type = "Quote Identification"
         }
-        console.log(Game.answer)
+        entity.sendQuestionInitData(type)
+        UI.addQuestionInfo(type)
         Game.startQuestion()
         console.log(questionText.split(" ").join(" "))
         await QuestionReader.readQuestion(questionText) 
@@ -303,7 +307,12 @@ export let Game = class {
     }
 
     static judgeAnswer(answer, source) {
-        let verdict = Game.answer.toLowerCase() === answer.toLowerCase()
+        let verdict = false
+        if (Game.answer.some) {
+            verdict = Game.answer.some(correct => correct.toLowerCase() === answer.toLowerCase())
+        } else {
+            verdict = Game.answer.toLowerCase() === answer.toLowerCase()
+        }
         entity.announceQuestionOutcome(verdict, source, answer, Game.answer)
         Game.enactAnswerEffects(source, answer, verdict, Game.answer)
     }

@@ -72,7 +72,7 @@ export let Player = class Player {
             case "startQuestion":
                 Game.startQuestion()
                 break;
-            case "questionData":
+            case "questionTextData":
                 UI.appendStringToQuestion(data.string)
                 break;
             case "startTimer":
@@ -120,6 +120,9 @@ export let Player = class Player {
                     this.hostUUID = data.playerUUID
                     UI.assignHostSpan()
                 }
+                break
+            case "questionInitData":
+                UI.addQuestionInfo(data.type)
                 break
         }
     }

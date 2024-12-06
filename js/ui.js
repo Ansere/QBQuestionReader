@@ -108,6 +108,10 @@ export default class UI {
         }
     }
 
+    static addQuestionInfo = (type) => {
+        document.getElementById("questionInfo").textContent = type
+    }
+
     static startQuestion = () => {
         let startButton = document.getElementById("startQuestionButton")
         startButton.setAttribute("disabled", true)
@@ -128,7 +132,7 @@ export default class UI {
 
     static showAnswer = (answer) => {
         let answerBox = document.getElementById("answerBox")
-        answerBox.textContent = answer
+        answerBox.textContent = answer.some ? answer.join(") ") : answer
         answerBox.classList.remove("hidden")
     }
 

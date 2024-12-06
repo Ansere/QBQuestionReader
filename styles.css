@@ -249,3 +249,12 @@ html, button, input {
     white-space: pre-wrap;
 }
 
+#questionInfo {
+    display: flex;
+    text-align: center;
+    padding: 1%;
+    align-items: center;
+    background-color: lightgray;
+    border-radius: 0.5em;
+    font-weight: bold;
+}

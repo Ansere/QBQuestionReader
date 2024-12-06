@@ -159,8 +159,8 @@ export class Host {
         this.broadcast(HostActionData.startQuestion())
     }
 
-    sendQuestionData(string) {
-        this.broadcast(HostActionData.questionData(string))
+    sendQuestionTextData(string) {
+        this.broadcast(HostActionData.questionTextData(string))
     }
 
     startTimer() {
@@ -177,6 +177,10 @@ export class Host {
 
     announceQuestionOutcome(verdict, player, answer, correctAnswer) {
         this.broadcast(HostActionData.announceQuestionOutcome(verdict, player, answer, correctAnswer))
+    }
+
+    sendQuestionInitData(type) {
+        this.broadcast(HostActionData.sendQuestionInitData(type))
     }
 
     async transferHost(uuid) {
@@ -269,13 +273,13 @@ class HostActionData {
 
     static startQuestion() {
         return JSON.stringify({
-            action: "startQuestion"
+            action: "startQuestion",
         })
     }
 
-    static questionData(string) {
+    static questionTextData(string) {
         return JSON.stringify({
-            action: "questionData",
+            action: "questionTextData",
             string: string
         })
     }
@@ -339,6 +343,13 @@ class HostActionData {
             player: peerID,
             playerUUID: uuid,
             hostUUID: host
+        })
+    }
+
+    static sendQuestionInitData(type) {
+        return JSON.stringify({
+            action: "questionInitData",
+            type: type
         })
     }
 
