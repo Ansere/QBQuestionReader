@@ -243,9 +243,22 @@ export let Game = class {
 
     static async readNewQuestion() {
         let questionData = randomQuestion()
-        Game.answer = questionData.answer
+        Game.answer = 0 
+        let questionText = questionData.question
+        if (questionData.mcq) {
+            let ansInd = Math.floor(Math.random() * 4)
+            questionText += "\n\n"
+            let ansArr = questionData.answers.slice(1)
+            ansArr.splice(ansInd, 0, questionData.answer)
+            questionText += ansArr.map( (val, ind) => ["W", "X", "Y", "Z"][ind] + ") " + val).join("\n")
+            Game.answer = ["W", "X", "Y", "Z"][ansInd]
+        } else {
+            Game.answer = questionData.answer
+        }
+        console.log(Game.answer)
         Game.startQuestion()
-        await QuestionReader.readQuestion(questionData.question) 
+        console.log(questionText.split(" ").join(" "))
+        await QuestionReader.readQuestion(questionText) 
         if (!Game.live) {
             return
         }

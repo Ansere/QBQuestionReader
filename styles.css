@@ -244,3 +244,8 @@ html, button, input {
     text-align: justify;
     text-justify: inter-word;
 }
+
+#questionBox {
+    white-space: pre-wrap;
+}
+
