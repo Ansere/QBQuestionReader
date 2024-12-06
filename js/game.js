@@ -249,7 +249,7 @@ export let Game = class {
         if (questionData.mcq) {
             let ansInd = Math.floor(Math.random() * 4)
             questionText += "\n\n"
-            let ansArr = questionData.answers.slice(1)
+            let ansArr = d3.shuffle(questionData.answers.slice(1))
             ansArr.splice(ansInd, 0, questionData.answer)
             questionText += ansArr.map( (val, ind) => ["W", "X", "Y", "Z"][ind] + ") " + val).join("\n")
             Game.answer = [["W", "X", "Y", "Z"][ansInd], questionData.answer]

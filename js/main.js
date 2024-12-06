@@ -8,6 +8,8 @@ export let setEntity = (e) => {
     entity = e
 }
 
+console.log(d3.shuffle([1, 2, 3]))
+
 //init
 document.addEventListener("DOMContentLoaded", async () => {
     //init controls
